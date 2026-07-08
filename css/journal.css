@@ -1,0 +1,207 @@
+/**
+ * journal.css - Learning Journal Styling for Nihon Journey
+ * Washi lined notepad layouts, debounced auto-save tags, and chronological records.
+ */
+
+.journal-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 28px;
+    align-items: start;
+}
+
+/* Notebook Page Styling */
+.notebook-page {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Washi tape visual accents */
+.notebook-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 40px;
+    width: 60px;
+    height: 18px;
+    background-color: rgba(var(--primary-hue), 78%, 56%, 0.15);
+    transform: translateY(-5px) rotate(-3deg);
+    border: 1px dashed rgba(var(--primary-hue), 78%, 56%, 0.3);
+    z-index: 10;
+}
+
+.notebook-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--primary-light);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+}
+
+.notebook-date {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Save Status Indicator */
+.save-status {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
+}
+
+.save-status.saving { color: var(--warning); }
+.save-status.saved { color: var(--success); }
+.save-status.idle { color: var(--text-muted); opacity: 0.5; }
+
+/* Grid Sections for Journal Prompts */
+.journal-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+/* Multi-column grids for shorter fields */
+.journal-row-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.journal-section-card {
+    background-color: var(--bg-washi);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.journal-section-card:focus-within {
+    border-color: var(--primary-light);
+    box-shadow: var(--shadow-sm);
+    background-color: var(--bg-card);
+}
+
+.journal-section-title {
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.journal-textarea {
+    border: none;
+    background: none;
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    width: 100%;
+    resize: none;
+    padding: 4px 0;
+    min-height: 80px;
+}
+
+.journal-textarea::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+/* History Column List */
+.journal-history-panel {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.journal-history-list {
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-grow: 1;
+}
+
+.history-card-item {
+    padding: 14px 16px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    background-color: var(--bg-washi);
+    transition: var(--transition);
+    text-align: left;
+}
+
+.history-card-item:hover {
+    border-color: var(--primary);
+    background-color: var(--bg-card);
+    transform: translateX(3px);
+}
+
+.history-card-item.active {
+    border-color: var(--primary);
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+}
+
+.history-card-date {
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.history-card-snippet {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.history-card-item.active .history-card-snippet {
+    color: var(--primary-dark);
+    opacity: 0.8;
+}
+
+/* Responsive adjustment */
+@media (max-width: 900px) {
+    .journal-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .journal-row-two-col {
+        grid-template-columns: 1fr;
+    }
+    
+    .journal-history-panel {
+        max-height: 350px;
+    }
+}

@@ -1,0 +1,52 @@
+/**
+ * dark.css - Dark Mode Variables Override for Nihon Journey
+ * Replaces warm Washi and Sakura tones with Sumi Black, Slate, and glowing neon accents.
+ */
+
+[data-theme="dark"] {
+    /* Color Palette - Dark Mode (Sumi Ink & Night Cherry Blossom) */
+    --primary: hsl(355, 85%, 65%); /* Neon Sakura Crimson */
+    --primary-light: hsl(355, 30%, 18%);
+    --primary-dark: hsl(355, 90%, 75%);
+    
+    --secondary: hsl(150, 45%, 55%); /* Bright Bamboo Green */
+    --secondary-light: hsl(150, 20%, 15%);
+    
+    --bg-washi: hsl(210, 24%, 9%); /* Sumi Ink Black */
+    --bg-card: hsl(210, 20%, 14%); /* Charcoal Slate */
+    --bg-sidebar: hsl(210, 22%, 11%); /* Dark Slate */
+    
+    --text-main: hsl(210, 20%, 92%); /* Bright Off-white */
+    --text-muted: hsl(210, 10%, 65%);
+    --text-on-primary: hsl(210, 24%, 10%); /* High contrast dark text */
+    
+    --border-color: hsl(210, 15%, 20%);
+    --border-focus: var(--primary);
+    
+    /* Shadows */
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6);
+    
+    /* SVG Background Patterns - Darker Seigaiha for sumi paper */
+    --seigaiha-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='30' viewBox='0 0 60 30'%3E%3Cpath d='M15 0C15 8.284 8.284 15 0 15V13C6.627 13 12 7.627 12 1v-1h3zm15 0c0 8.284-6.284 15-13 15V13c5.523 0 10-4.477 10-10v-1h3zm15 0c0 8.284-6.284 15-13 15V13c5.523 0 10-4.477 10-10v-1h3zm15 0c0 8.284-6.284 15-13 15V13c5.523 0 10-4.477 10-10v-1h3zM0 15c8.284 0 15 6.716 15 15h-2c0-6.627-5.373-12-12-12v-2zm30 0c8.284 0 15 6.716 15 15h-2c0-6.627-5.373-12-12-12v-2zm30 0c8.284 0 15 6.716 15 15h-2c0-6.627-5.373-12-12-12v-2z' fill='%232b3540' fill-opacity='0.25' fill-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+/* Specific component style adjustments in dark mode for better visibility */
+[data-theme="dark"] .nav-link:hover {
+    background-color: var(--primary-light);
+    color: var(--primary);
+}
+
+[data-theme="dark"] .streak-badge.active i {
+    color: #ffd166;
+    text-shadow: 0 0 10px rgba(255, 209, 102, 0.6);
+}
+
+[data-theme="dark"] .btn-primary {
+    color: #14191f; /* dark text for sakura primary button */
+}
+
+[data-theme="dark"] .toast {
+    background-color: var(--bg-card);
+}

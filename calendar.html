@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nihon Journey - Study History & Calendar</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Style Sheets -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/calendar.css">
+    <link rel="stylesheet" href="css/dark.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="torii-loader">⛩️</div>
+        <h2>Nihon Journey</h2>
+        <p>Loading your study scroll...</p>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar Injection -->
+        <aside id="sidebar-container"></aside>
+
+        <!-- Main Wrapper -->
+        <div class="main-wrapper">
+            <!-- Header Injection -->
+            <header id="header-container"></header>
+
+            <main id="main-content">
+                
+                <!-- Calendar Month Controls -->
+                <div class="calendar-header-bar">
+                    <div class="calendar-title">
+                        <i class="far fa-calendar-check" style="color:var(--primary);"></i>
+                        <span id="calendar-month-year">Month Year</span>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn btn-outline btn-icon" id="calendar-month-prev" title="Previous Month">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;" id="calendar-month-today">Current Month</button>
+                        <button class="btn btn-outline btn-icon" id="calendar-month-next" title="Next Month">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Monthly Calendar Card Grid -->
+                <div class="calendar-container">
+                    <div class="calendar-grid" id="calendar-grid-body">
+                        <!-- Rendered by calendar.js -->
+                    </div>
+                </div>
+
+                <!-- Legend Indicator Row -->
+                <div class="calendar-legend">
+                    <div class="legend-item">
+                        <span class="legend-color completed"></span>
+                        <strong>Goal Completed</strong>
+                        <span style="color:var(--text-muted); font-size:0.75rem;">(Daily tasks target or study hours met)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color partial"></span>
+                        <strong>Partial Progress</strong>
+                        <span style="color:var(--text-muted); font-size:0.75rem;">(Some tasks completed or study logged)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color missed"></span>
+                        <strong>Missed Day</strong>
+                        <span style="color:var(--text-muted); font-size:0.75rem;">(No tasks completed or study time logged)</span>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Day History Modal -->
+    <div id="day-history-modal" class="nihon-modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <span class="modal-title" id="history-modal-title">Wednesday, July 8, 2026</span>
+                <button class="modal-close" onclick="closeHistoryModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="history-modal-body">
+                <!-- Injected dynamically by calendar.js -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeHistoryModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core & Page Services Scripts -->
+    <script src="js/storage.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/timer.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/calendar.js"></script>
+</body>
+</html>

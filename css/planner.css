@@ -1,0 +1,354 @@
+/**
+ * planner.css - Planner Page Styling for Nihon Journey
+ * Layouts for task list, filter bars, drag & drop states, and tags.
+ */
+
+/* Filter & Control Bar */
+.planner-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 16px 20px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 24px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    position: relative;
+    flex-grow: 1;
+    max-width: 320px;
+    min-width: 200px;
+}
+
+.search-box i {
+    position: absolute;
+    left: 14px;
+    color: var(--text-muted);
+}
+
+.search-box .form-control {
+    padding-left: 40px;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filter-select {
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-washi);
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.filter-select:focus {
+    border-color: var(--primary);
+}
+
+/* Tabs for Completion Status */
+.status-tabs {
+    display: flex;
+    background-color: var(--bg-washi);
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.status-tab {
+    padding: 6px 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: calc(var(--radius-sm) - 2px);
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    transition: var(--transition);
+}
+
+.status-tab.active {
+    background-color: var(--bg-card);
+    color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Task Item & Lists */
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 150px;
+}
+
+.task-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    transition: var(--transition);
+    cursor: grab;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+}
+
+.task-card:hover {
+    border-color: var(--primary-light);
+    box-shadow: var(--shadow-md);
+}
+
+.task-card:active {
+    cursor: grabbing;
+}
+
+/* Drag and Drop States */
+.task-card.dragging {
+    opacity: 0.4;
+    border: 1px dashed var(--primary);
+}
+
+.task-list-drag-hover {
+    background-color: var(--primary-light);
+    border: 2px dashed var(--primary);
+    border-radius: var(--radius-md);
+}
+
+/* Left Section: Checkbox & Info */
+.task-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.task-check-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    background-color: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.8rem;
+    transition: var(--transition);
+    flex-shrink: 0;
+}
+
+.task-check-btn:hover {
+    border-color: var(--primary);
+    background-color: var(--primary-light);
+    color: var(--primary);
+}
+
+.task-card.completed .task-check-btn {
+    background-color: var(--success);
+    border-color: var(--success);
+    color: white;
+}
+
+.task-card.completed .task-check-btn:hover {
+    background-color: var(--success);
+    opacity: 0.8;
+}
+
+.task-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+}
+
+.task-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-main);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.task-card.completed .task-name {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+.task-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Badges */
+.tag {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tag-cat {
+    background-color: var(--bg-washi);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+}
+
+.tag-priority-high {
+    background-color: hsl(355, 78%, 93%);
+    color: var(--danger);
+}
+
+.tag-priority-medium {
+    background-color: hsl(42, 85%, 93%);
+    color: var(--warning);
+}
+
+.tag-priority-low {
+    background-color: hsl(195, 70%, 93%);
+    color: var(--info);
+}
+
+.task-time-est {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.tag-carried {
+    background-color: hsl(270, 50%, 93%);
+    color: hsl(270, 60%, 45%);
+    border: 1px solid hsl(270, 50%, 85%);
+}
+
+/* Actions Section */
+.task-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.btn-task-action {
+    background: none;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    transition: var(--transition);
+}
+
+.btn-task-action:hover {
+    background-color: var(--bg-washi);
+    color: var(--primary);
+}
+
+.btn-task-action.delete:hover {
+    color: var(--danger);
+    background-color: hsl(355, 78%, 95%);
+}
+
+/* Expandable Notes Box */
+.task-notes-box {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    width: 100%;
+    display: none;
+}
+
+.task-card.notes-open {
+    flex-wrap: wrap;
+}
+
+.task-card.notes-open .task-notes-box {
+    display: block;
+}
+
+/* Modal Priority Selection Groups */
+.priority-btn-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.priority-select-btn {
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-washi);
+    padding: 10px 0;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.priority-select-btn.high:hover { border-color: var(--danger); color: var(--danger); }
+.priority-select-btn.high.active { background-color: var(--danger); border-color: var(--danger); color: white; }
+
+.priority-select-btn.medium:hover { border-color: var(--warning); color: var(--warning); }
+.priority-select-btn.medium.active { background-color: var(--warning); border-color: var(--warning); color: white; }
+
+.priority-select-btn.low:hover { border-color: var(--info); color: var(--info); }
+.priority-select-btn.low.active { background-color: var(--info); border-color: var(--info); color: white; }
+
+/* Empty state styling */
+.planner-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: var(--bg-card);
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    color: var(--text-muted);
+}
+
+.planner-empty-state i {
+    font-size: 3rem;
+    color: var(--primary-light);
+}
+
+.planner-empty-state h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-main);
+}

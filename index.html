@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nihon Journey - Dashboard</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Core & Dark stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/planner.css">
+    <link rel="stylesheet" href="css/dark.css">
+    <style>
+        /* Dashboard-specific Styles */
+        .greet-time {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        
+        .clock-container {
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .action-card {
+            flex: 1 1 200px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .action-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .action-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            transition: var(--transition);
+        }
+
+        .action-card:hover .action-icon {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .action-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .action-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .action-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Checklists Cards */
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 16px;
+        }
+
+        .checklist-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checklist-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .chk-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chk-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chk-progress-num {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Grid for Kana checklist inside modal */
+        .kana-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            max-width: 100%;
+        }
+
+        .kana-box {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background-color: var(--bg-washi);
+            padding: 10px 4px;
+            text-align: center;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .kana-box:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            background-color: var(--bg-card);
+        }
+
+        .kana-box.checked {
+            background-color: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary-dark);
+        }
+
+        .kana-box.checked::after {
+            content: '✓';
+            position: absolute;
+            top: 2px;
+            right: 4px;
+            font-size: 0.6rem;
+            font-weight: 900;
+        }
+
+        .kana-char {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .kana-romaji {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Kanji/Vocab grids inside modal */
+        .list-items-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .list-item-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .list-item-box:hover {
+            border-color: var(--primary);
+            background-color: var(--bg-washi);
+        }
+
+        .list-item-box.checked {
+            background-color: var(--secondary-light);
+            border-color: var(--secondary);
+        }
+
+        .list-item-checkbox {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: white;
+            transition: var(--transition);
+        }
+
+        .list-item-box.checked .list-item-checkbox {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        .item-main-txt {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .item-sub-txt {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <!-- Torii Loader Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="torii-loader">⛩️</div>
+        <h2>Nihon Journey</h2>
+        <p>Loading your study path...</p>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar Menu Injected Here -->
+        <aside id="sidebar-container"></aside>
+
+        <!-- Main Workspace -->
+        <div class="main-wrapper">
+            <!-- Header Injected Here -->
+            <header id="header-container"></header>
+
+            <main id="main-content" style="display:flex; flex-direction:column; gap:24px;">
+                
+                <!-- Greet row -->
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+                    <div>
+                        <div class="greet-time" id="dashboard-greet-jp">
+                            <span>こんにちは</span>
+                        </div>
+                        <h2 style="font-weight: 800; font-size: 1.6rem;" id="dashboard-greet-user">Konnichiwa, Learner!</h2>
+                    </div>
+                    <div class="clock-container">
+                        <i class="far fa-clock" style="color: var(--primary);"></i>
+                        <span id="live-clock-time">00:00:00 AM</span>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Menu -->
+                <div class="quick-actions">
+                    <div class="action-card" onclick="window.location.href='planner.html'">
+                        <div class="action-icon"><i class="fas fa-plus"></i></div>
+                        <div class="action-info">
+                            <span class="action-title">Add Task</span>
+                            <span class="action-desc">Add a planner item for today</span>
+                        </div>
+                    </div>
+                    <div class="action-card" id="start-timer-action">
+                        <div class="action-icon"><i class="fas fa-play"></i></div>
+                        <div class="action-info">
+                            <span class="action-title">Start Timer</span>
+                            <span class="action-desc">Open Pomodoro clock</span>
+                        </div>
+                    </div>
+                    <div class="action-card" onclick="window.location.href='journal.html'">
+                        <div class="action-icon"><i class="fas fa-pen-nib"></i></div>
+                        <div class="action-info">
+                            <span class="action-title">Write Journal</span>
+                            <span class="action-desc">Record notes and Kanji logs</span>
+                        </div>
+                    </div>
+                    <div class="action-card" onclick="window.location.href='calendar.html'">
+                        <div class="action-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <div class="action-info">
+                            <span class="action-title">View History</span>
+                            <span class="action-desc">Track study calendar logs</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active AI Goal Panel (Spans 12 columns) -->
+                <div class="nihon-card traditional" id="dashboard-ai-goal-card" style="display: none; gap: 24px; align-items: center; flex-wrap: wrap; margin-bottom: 24px; border-color: var(--primary-light);">
+                    <div style="flex: 2 1 350px; display:flex; flex-direction:column; gap:8px;">
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <span class="tag tag-cat" style="background-color: var(--primary-light); color: var(--primary-dark); font-weight:700;"><i class="fas fa-brain"></i> Active AI Study Goal</span>
+                        </div>
+                        <h3 style="font-weight: 800; font-size: 1.4rem; margin-top: 4px;" id="dashboard-ai-goal-title">Goal Title</h3>
+                        <p style="color:var(--text-muted); font-size: 0.85rem;" id="dashboard-ai-goal-desc">Goal description...</p>
+                        
+                        <!-- Progress Bar -->
+                        <div style="margin-top: 8px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; font-size: 0.75rem; font-weight: 700; margin-bottom: 4px;">
+                                <span id="dashboard-ai-progress-lbl">0 of 0 tasks completed (0%)</span>
+                                <span id="dashboard-ai-days-remain" style="color: var(--primary);">0 days remaining</span>
+                            </div>
+                            <div class="nihon-progress-bar">
+                                <div class="nihon-progress-fill" id="dashboard-ai-progress-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommendations & Next Actions -->
+                    <div style="flex: 1 1 280px; display:flex; flex-direction:column; gap:10px; border-left: 1px solid var(--border-color); padding-left: 20px;" id="dashboard-ai-rec-box">
+                        <div>
+                            <span style="font-size:0.7rem; font-weight:800; text-transform:uppercase; color:var(--primary); letter-spacing:0.5px; display:block; margin-bottom:4px;">Today's AI Recommendation:</span>
+                            <div style="font-weight: 700; font-size: 0.95rem; margin-top: 2px;" id="dashboard-ai-today-rec">No task scheduled for today.</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:6px; font-size:0.75rem; color:var(--text-muted); font-weight:700; margin-top:4px;">
+                            <span id="dashboard-ai-next-revision"><i class="fas fa-history"></i> Next Revision: Day --</span>
+                            <span id="dashboard-ai-next-test"><i class="fas fa-flag"></i> Next Test: Day --</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Grid -->
+                <div class="dashboard-grid">
+                    
+                    <!-- Daily Progress card (circular ring) -->
+                    <div class="nihon-card traditional" style="grid-column: span 5; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+                        <h3 class="card-title" style="width:100%;"><i class="fas fa-bullseye"></i>Today's Progress</h3>
+                        <div class="progress-ring-container" style="margin: 16px 0;">
+                            <svg width="150" height="150">
+                                <circle stroke="var(--border-color)" stroke-width="10" fill="transparent" r="62" cx="75" cy="75"/>
+                                <circle id="daily-progress-ring" stroke="var(--primary)" stroke-width="10" fill="transparent" r="62" cx="75" cy="75"
+                                        class="progress-ring-circle" stroke-dasharray="389.55" stroke-dashoffset="389.55"/>
+                            </svg>
+                            <div class="progress-text">
+                                <span id="daily-progress-pct" style="font-size: 1.8rem; font-weight: 800;">0%</span>
+                                <span style="font-size: 0.6rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Completed</span>
+                            </div>
+                        </div>
+                        <div style="display:flex; justify-content:space-around; width:100%; border-top:1px solid var(--border-color); padding-top:16px;">
+                            <div>
+                                <div style="font-size:1.1rem; font-weight:800;" id="stats-total-tasks">0</div>
+                                <div style="font-size:0.7rem; color:var(--text-muted);">Total Tasks</div>
+                            </div>
+                            <div style="border-right: 1px solid var(--border-color);"></div>
+                            <div>
+                                <div style="font-size:1.1rem; font-weight:800; color:var(--success);" id="stats-done-tasks">0</div>
+                                <div style="font-size:0.7rem; color:var(--text-muted);">Completed</div>
+                            </div>
+                            <div style="border-right: 1px solid var(--border-color);"></div>
+                            <div>
+                                <div style="font-size:1.1rem; font-weight:800; color:var(--primary);" id="stats-remain-tasks">0</div>
+                                <div style="font-size:0.7rem; color:var(--text-muted);">Remaining</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats & Study Time Grid Card -->
+                    <div style="grid-column: span 7; display:flex; flex-direction:column; gap:20px;">
+                        
+                        <!-- Daily Stats Row -->
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                            <div class="nihon-card" style="display:flex; gap:16px; align-items:center; padding: 20px;">
+                                <div class="action-icon" style="background-color: var(--secondary-light); color:var(--secondary);">
+                                    <i class="fas fa-hourglass-half"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.3rem; font-weight:800;" id="stats-study-time">0m</div>
+                                    <div style="font-size: 0.75rem; color:var(--text-muted);">Today's Study Time</div>
+                                </div>
+                            </div>
+                            <div class="nihon-card" style="display:flex; gap:16px; align-items:center; padding: 20px;">
+                                <div class="action-icon" style="background-color: hsl(42, 85%, 93%); color: #ff9f1c;">
+                                    <i class="fas fa-fire"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.3rem; font-weight:800;" id="stats-streak-days">0 Days</div>
+                                    <div style="font-size: 0.75rem; color:var(--text-muted);">Current Streak</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quote Card -->
+                        <div class="nihon-card quote-box" style="flex-grow:1; display:flex; flex-direction:column; justify-content:center;">
+                            <div class="quote-jp" id="quote-jp">継続は力なり</div>
+                            <div class="quote-romaji" id="quote-romaji">Keizoku wa chikara nari</div>
+                            <div class="quote-en" id="quote-en">"Continuity is strength. (Perseverance pays off)"</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Today's Study Tasks Card -->
+                <div class="nihon-card traditional" style="margin-bottom: 8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+                        <h3 class="card-title" style="margin:0; font-size:1.15rem;"><i class="fas fa-clipboard-list"></i> Today's Study Tasks</h3>
+                        <a href="planner.html" style="font-size:0.8rem; color:var(--primary); font-weight:700; text-decoration:none;"><i class="fas fa-arrow-right"></i> Open Daily Planner</a>
+                    </div>
+                    
+                    <div id="dashboard-tasks-container" style="display:flex; flex-direction:column; gap:12px;">
+                        <!-- Tasks list items will be injected dynamically -->
+                    </div>
+                </div>
+
+                <!-- Study Checklist Section -->
+                <div>
+                    <h3 style="font-weight:800; font-size:1.3rem; margin-bottom: 8px;">Study Checklist</h3>
+                    <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 16px;">Check off elements as you master them to track progress bars.</p>
+                    
+                    <div class="checklist-grid">
+                        <div class="checklist-card" onclick="openChecklistModal('hiragana')">
+                            <div class="chk-header">
+                                <span class="chk-title">あ Hiragana Checklist</span>
+                                <span class="chk-progress-num" id="chk-num-hiragana">0/46</span>
+                            </div>
+                            <div class="nihon-progress-bar">
+                                <div class="nihon-progress-fill" id="chk-fill-hiragana"></div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-card" onclick="openChecklistModal('katakana')">
+                            <div class="chk-header">
+                                <span class="chk-title">ア Katakana Checklist</span>
+                                <span class="chk-progress-num" id="chk-num-katakana">0/46</span>
+                            </div>
+                            <div class="nihon-progress-bar">
+                                <div class="nihon-progress-fill" id="chk-fill-katakana"></div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-card" onclick="openChecklistModal('kanji')">
+                            <div class="chk-header">
+                                <span class="chk-title">字 N5 Kanji Checklist</span>
+                                <span class="chk-progress-num" id="chk-num-kanji">0/25</span>
+                            </div>
+                            <div class="nihon-progress-bar">
+                                <div class="nihon-progress-fill" id="chk-fill-kanji"></div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-card" onclick="openChecklistModal('vocabulary')">
+                            <div class="chk-header">
+                                <span class="chk-title">語 Essential Vocabulary</span>
+                                <span class="chk-progress-num" id="chk-num-vocabulary">0/10</span>
+                            </div>
+                            <div class="nihon-progress-bar">
+                                <div class="nihon-progress-fill" id="chk-fill-vocabulary"></div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-card" onclick="openChecklistModal('grammar')">
+                            <div class="chk-header">
+                                <span class="chk-title">文 Essential N5 Grammar</span>
+                                <span class="chk-progress-num" id="chk-num-grammar">0/10</span>
+                            </div>
+                            <div class="nihon-progress-bar">
+                                <div class="nihon-progress-fill" id="chk-fill-grammar"></div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-card" onclick="openChecklistModal('skills')">
+                            <div class="chk-header">
+                                <span class="chk-title">🎯 Core Study Skills</span>
+                                <span class="chk-progress-num" id="chk-num-skills">0/4</span>
+                            </div>
+                            <div class="nihon-progress-bar">
+                                <div class="nihon-progress-fill" id="chk-fill-skills"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Universal Checklist Modal -->
+    <div id="checklist-modal" class="nihon-modal">
+        <div class="modal-content" style="max-width: 550px;">
+            <div class="modal-header">
+                <span class="modal-title" id="chk-modal-title">Checklist Title</span>
+                <button class="modal-close" onclick="closeChecklistModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="chk-modal-body">
+                <!-- Grid / List items will be injected here dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeChecklistModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Services Scripts -->
+    <script src="js/storage.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/timer.js"></script>
+    <script src="js/app.js"></script>
+
+    <!-- Page Specific Script -->
+    <script>
+        // Start Timer button click
+        document.getElementById('start-timer-action').addEventListener('click', () => {
+            const modal = document.getElementById('global-timer-modal');
+            if (modal) modal.classList.add('open');
+        });
+
+        // Live Clock
+        function runLiveClock() {
+            const clockEl = document.getElementById('live-clock-time');
+            if (clockEl) {
+                setInterval(() => {
+                    const now = new Date();
+                    clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                }, 1000);
+            }
+        }
+
+        // Japanese Greeting based on Hour
+        function setJapaneseGreeting() {
+            const hours = new Date().getHours();
+            const greetJp = document.getElementById('dashboard-greet-jp');
+            const greetUser = document.getElementById('dashboard-greet-user');
+            const settings = window.NihonStorage.getSettings();
+            
+            let jp = 'こんにちは'; // Afternoon
+            let en = 'Konnichiwa';
+            
+            if (hours >= 5 && hours < 12) {
+                jp = 'おはようございます'; // Morning
+                en = 'Ohayou gozaimasu';
+            } else if (hours >= 18 || hours < 5) {
+                jp = 'こんばんは'; // Evening
+                en = 'Konbanwa';
+            }
+
+            if (greetJp) greetJp.innerHTML = `<span>${jp}</span>`;
+            if (greetUser) greetUser.textContent = `${en}, ${settings.username || 'Learner'}!`;
+        }
+
+        // Load & Sync Dashboard Statistics
+        function loadDashboardStats() {
+            const todayStr = window.NihonStorage.getLocalDateString();
+            const tasks = window.NihonStorage.getTasks(todayStr);
+            const totalTasks = tasks.length;
+            const completedTasks = tasks.filter(t => t.completed).length;
+            const remainingTasks = totalTasks - completedTasks;
+            
+            // Progress percentage
+            const pct = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+            
+            // Update circular ring
+            const ring = document.getElementById('daily-progress-ring');
+            if (ring) {
+                const circ = 389.55; // 2 * pi * r, r=62
+                const offset = circ - (pct / 100) * circ;
+                ring.style.strokeDashoffset = offset;
+            }
+
+            // Update DOM text
+            document.getElementById('daily-progress-pct').textContent = `${pct}%`;
+            document.getElementById('stats-total-tasks').textContent = totalTasks;
+            document.getElementById('stats-done-tasks').textContent = completedTasks;
+            document.getElementById('stats-remain-tasks').textContent = remainingTasks;
+
+            // Study time (seconds to minutes)
+            const studySeconds = window.NihonStorage.getStudyTime(todayStr);
+            const studyMinutes = Math.floor(studySeconds / 60);
+            const studySecRemaining = studySeconds % 60;
+            document.getElementById('stats-study-time').textContent = studyMinutes > 0 
+                ? `${studyMinutes}m ${studySecRemaining}s` 
+                : `${studySecRemaining}s`;
+
+            // Streaks
+            const streaks = window.NihonStorage.getStreaks();
+            document.getElementById('stats-streak-days').textContent = `${streaks.currentStreak} Day${streaks.currentStreak !== 1 ? 's' : ''}`;
+        }
+
+        // Load & Sync Active AI Goal Panel on Dashboard
+        function loadAiGoalStats() {
+            const goal = window.NihonStorage.getAiGoal();
+            const card = document.getElementById('dashboard-ai-goal-card');
+            
+            if (!card) return;
+
+            if (goal.status !== 'active') {
+                card.style.display = 'none';
+                return;
+            }
+
+            card.style.display = 'flex';
+
+            // Set text values
+            document.getElementById('dashboard-ai-goal-title').textContent = goal.title;
+            document.getElementById('dashboard-ai-goal-desc').textContent = goal.description || 'Personalized AI study plan.';
+
+            // Get schedule progress
+            const schedule = window.NihonStorage.getAiSchedule();
+            const total = schedule.length;
+            const done = schedule.filter(t => t.completed).length;
+            const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+            document.getElementById('dashboard-ai-progress-lbl').textContent = `${done} of ${total} days completed (${pct}%)`;
+            document.getElementById('dashboard-ai-progress-fill').style.width = `${pct}%`;
+
+            // Days remaining countdown
+            const todayStr = window.NihonStorage.getLocalDateString();
+            const todayObj = new Date(todayStr);
+            const endObj = new Date(goal.endDate);
+            const diffDays = Math.ceil((endObj - todayObj) / (1000 * 60 * 60 * 24));
+            document.getElementById('dashboard-ai-days-remain').textContent = diffDays >= 0 ? `${diffDays} days remaining` : 'Deadline passed';
+
+            // Today's AI Recommendation
+            const todayTask = schedule.find(t => t.date === todayStr);
+            const recEl = document.getElementById('dashboard-ai-today-rec');
+            if (todayTask) {
+                if (todayTask.completed) {
+                    recEl.innerHTML = `<span style="color: var(--success); font-weight:700;"><i class="fas fa-check-circle"></i> Completed: "${todayTask.title}"</span>`;
+                } else {
+                    recEl.innerHTML = `<span style="font-weight:700; color: var(--primary-dark);">${todayTask.title}</span><span style="display:block; font-size:0.75rem; color: var(--text-muted); font-weight:normal; margin-top:2px;">${todayTask.details} (${todayTask.estTime}m)</span>`;
+                }
+            } else {
+                recEl.textContent = 'No task scheduled for today.';
+            }
+
+            // Next Revision and next test milestones
+            const nextRevision = schedule.find(t => t.isRevision && !t.completed && new Date(t.date) >= todayObj);
+            const nextTest = schedule.find(t => t.isMockTest && !t.completed && new Date(t.date) >= todayObj);
+
+            const revEl = document.getElementById('dashboard-ai-next-revision');
+            const testEl = document.getElementById('dashboard-ai-next-test');
+
+            if (nextRevision) {
+                const d = new Date(nextRevision.date);
+                revEl.innerHTML = `<i class="fas fa-history"></i> Next Revision: Day ${nextRevision.dayNumber} (${d.toLocaleDateString([], {month:'short', day:'numeric'})})`;
+            } else {
+                revEl.innerHTML = `<i class="fas fa-history"></i> No pending revisions`;
+            }
+
+            if (nextTest) {
+                const d = new Date(nextTest.date);
+                testEl.innerHTML = `<i class="fas fa-flag"></i> Next Test: Day ${nextTest.dayNumber} (${d.toLocaleDateString([], {month:'short', day:'numeric'})})`;
+            } else {
+                testEl.innerHTML = `<i class="fas fa-flag"></i> No pending tests`;
+            }
+        }
+
+        // Load & Sync Today's Task List on Dashboard
+        function loadDashboardTasks() {
+            const container = document.getElementById('dashboard-tasks-container');
+            if (!container) return;
+
+            const todayStr = window.NihonStorage.getLocalDateString();
+            const tasks = window.NihonStorage.getTasks(todayStr);
+
+            if (tasks.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align:center; padding: 24px 8px; color:var(--text-muted); font-size:0.85rem;">
+                        No tasks scheduled for today. <a href="planner.html?add=true" style="color:var(--primary); font-weight:700; text-decoration:none; margin-left:4px;">Add a task <i class="fas fa-plus"></i></a> or launch an AI plan to start!
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = tasks.map(task => {
+                const isCompleted = task.completed;
+                const completedClass = isCompleted ? 'completed' : '';
+                const statusIcon = isCompleted ? '<i class="fas fa-check"></i>' : '';
+                const priorityClass = `tag-priority-${task.priority}`;
+                
+                const isAi = task.isAiTask || (task.id && task.id.startsWith('ai_task_'));
+                const aiBadge = isAi ? `<span class="tag tag-cat" style="background-color:var(--primary-light); color:var(--primary-dark); border-color:var(--primary-light);" title="AI Scheduled Task"><i class="fas fa-brain"></i> AI</span>` : '';
+                const carriedBadge = task.carriedFrom ? `<span class="tag tag-carried" style="font-size:0.65rem;" title="Carried from ${task.carriedFrom}">🔄 Carried</span>` : '';
+
+                return `
+                    <div class="task-card ${completedClass}" style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; margin:0;" data-id="${task.id}">
+                        <div style="display:flex; align-items:center; gap:12px; flex-grow:1;">
+                            <button class="task-check-btn" onclick="toggleDashboardTask('${task.id}')" title="${isCompleted ? 'Mark incomplete' : 'Mark complete'}">
+                                ${statusIcon}
+                            </button>
+                            <div style="display:flex; flex-direction:column; gap:4px;">
+                                <span style="font-weight:700; font-size:0.95rem; text-decoration:${isCompleted ? 'line-through' : 'none'}; color:${isCompleted ? 'var(--text-muted)' : 'var(--text-main)'};">${escapeHTML(task.name || task.title)}</span>
+                                <div style="display:flex; gap:8px; flex-wrap:wrap; font-size:0.75rem; align-items:center;">
+                                    ${aiBadge}
+                                    <span class="tag tag-cat">${task.category}</span>
+                                    <span class="tag ${priorityClass}">${task.priority}</span>
+                                    <span style="color:var(--text-muted); font-size:0.7rem;"><i class="far fa-hourglass"></i> ${task.estTime}m</span>
+                                    ${carriedBadge}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Toggle task completion from dashboard
+        window.toggleDashboardTask = function (taskId) {
+            const todayStr = window.NihonStorage.getLocalDateString();
+            const tasks = window.NihonStorage.getTasks(todayStr);
+            const task = tasks.find(t => t.id === taskId);
+            
+            if (task) {
+                const nextVal = !task.completed;
+                window.NihonStorage.updateTask(todayStr, taskId, { completed: nextVal });
+
+                if (nextVal && window.NihonApp) {
+                    window.NihonApp.showToast('Task Done! 🏆', `"${task.name || task.title}" completed.`, 'success');
+                }
+
+                // Reload everything on dashboard to sync rings, totals, and recommendations
+                loadDashboardStats();
+                loadAiGoalStats();
+                loadDashboardTasks();
+            }
+        };
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+
+        // Load & Sync Checklist Progress bars
+        function loadChecklistProgress() {
+            const listDb = window.NihonStorage.getChecklists();
+            const staticData = window.NihonStorage.getStaticChecklistData();
+
+            const categories = ['hiragana', 'katakana', 'kanji', 'vocabulary', 'grammar', 'skills'];
+            
+            categories.forEach(cat => {
+                const total = staticData[cat].length;
+                const completed = listDb[cat] ? listDb[cat].length : 0;
+                const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+                // Update text
+                const textEl = document.getElementById(`chk-num-${cat}`);
+                if (textEl) textEl.textContent = `${completed}/${total}`;
+
+                // Update Progress bar
+                const fillEl = document.getElementById(`chk-fill-${cat}`);
+                if (fillEl) fillEl.style.width = `${pct}%`;
+            });
+        }
+
+        // Random Quote
+        function loadQuote() {
+            const quote = window.NihonStorage.getRandomQuote();
+            document.getElementById('quote-jp').textContent = quote.jp;
+            document.getElementById('quote-romaji').textContent = quote.romaji;
+            document.getElementById('quote-en').textContent = `"${quote.en}"`;
+        }
+
+        // Checklist Modal CRUD
+        let activeChecklistCategory = '';
+        
+        function openChecklistModal(category) {
+            activeChecklistCategory = category;
+            const modal = document.getElementById('checklist-modal');
+            const titleEl = document.getElementById('chk-modal-title');
+            const bodyEl = document.getElementById('chk-modal-body');
+
+            const staticData = window.NihonStorage.getStaticChecklistData();
+            const currentChecked = window.NihonStorage.getChecklists()[category] || [];
+
+            let titleText = '';
+            let contentHtml = '';
+
+            if (category === 'hiragana' || category === 'katakana') {
+                titleText = `${category.charAt(0).toUpperCase() + category.slice(1)} Grid`;
+                const list = staticData[category];
+                
+                contentHtml += `<div class="kana-grid">`;
+                list.forEach(item => {
+                    const isChecked = currentChecked.includes(item.char);
+                    contentHtml += `
+                        <div class="kana-box ${isChecked ? 'checked' : ''}" onclick="toggleChecklistItem('${category}', '${item.char}', this)">
+                            <span class="kana-char">${item.char}</span>
+                            <span class="kana-romaji">${item.romaji}</span>
+                        </div>
+                    `;
+                });
+                contentHtml += `</div>`;
+            } else if (category === 'kanji') {
+                titleText = 'Essential N5 Kanji';
+                const list = staticData.kanji;
+                contentHtml += `<div class="list-items-grid">`;
+                list.forEach(item => {
+                    const isChecked = currentChecked.includes(item.char);
+                    contentHtml += `
+                        <div class="list-item-box ${isChecked ? 'checked' : ''}" onclick="toggleChecklistItem('kanji', '${item.char}', this)">
+                            <div class="list-item-checkbox"><i class="fas fa-check"></i></div>
+                            <div>
+                                <span class="item-main-txt">${item.char}</span>
+                                <span class="item-sub-txt" style="margin-left: 8px;">(${item.romaji}) &mdash; ${item.mean}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                contentHtml += `</div>`;
+            } else if (category === 'vocabulary') {
+                titleText = 'Essential N5 Vocabulary';
+                const list = staticData.vocabulary;
+                contentHtml += `<div class="list-items-grid">`;
+                list.forEach(item => {
+                    const isChecked = currentChecked.includes(item.phrase);
+                    contentHtml += `
+                        <div class="list-item-box ${isChecked ? 'checked' : ''}" onclick="toggleChecklistItem('vocabulary', '${item.phrase}', this)">
+                            <div class="list-item-checkbox"><i class="fas fa-check"></i></div>
+                            <div>
+                                <span class="item-main-txt">${item.phrase}</span>
+                                <span class="item-sub-txt" style="display:block; margin-top:2px;">Meaning: ${item.mean}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                contentHtml += `</div>`;
+            } else if (category === 'grammar') {
+                titleText = 'Essential N5 Grammar Rules';
+                const list = staticData.grammar;
+                contentHtml += `<div class="list-items-grid">`;
+                list.forEach(item => {
+                    const isChecked = currentChecked.includes(item.rule);
+                    contentHtml += `
+                        <div class="list-item-box ${isChecked ? 'checked' : ''}" onclick="toggleChecklistItem('grammar', '${item.rule}', this)">
+                            <div class="list-item-checkbox"><i class="fas fa-check"></i></div>
+                            <div>
+                                <span class="item-main-txt">${item.rule}</span>
+                                <span class="item-sub-txt" style="display:block; margin-top:2px;">Function: ${item.mean}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                contentHtml += `</div>`;
+            } else if (category === 'skills') {
+                titleText = 'Core Study Skills';
+                const list = staticData.skills;
+                contentHtml += `<div class="list-items-grid">`;
+                list.forEach(skill => {
+                    const isChecked = currentChecked.includes(skill);
+                    contentHtml += `
+                        <div class="list-item-box ${isChecked ? 'checked' : ''}" onclick="toggleChecklistItem('skills', '${skill}', this)">
+                            <div class="list-item-checkbox"><i class="fas fa-check"></i></div>
+                            <div>
+                                <span class="item-main-txt">${skill}</span>
+                                <span class="item-sub-txt" style="display:block; margin-top:2px;">Practiced and recorded today</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                contentHtml += `</div>`;
+            }
+
+            titleEl.textContent = titleText;
+            bodyEl.innerHTML = contentHtml;
+            modal.classList.add('open');
+        }
+
+        function closeChecklistModal() {
+            const modal = document.getElementById('checklist-modal');
+            if (modal) modal.classList.remove('open');
+            loadChecklistProgress();
+        }
+
+        function toggleChecklistItem(category, key, element) {
+            const isChecked = window.NihonStorage.toggleChecklistItem(category, key);
+            element.classList.toggle('checked', isChecked);
+            
+            // Check achievements if checklist changes
+            window.NihonStorage.checkChecklistAchievements();
+        }
+
+        // Initialize Page
+        document.addEventListener('DOMContentLoaded', () => {
+            runLiveClock();
+            setJapaneseGreeting();
+            loadDashboardStats();
+            loadAiGoalStats();
+            loadDashboardTasks();
+            loadChecklistProgress();
+            loadQuote();
+
+            // Reload statistics dynamically if the timer runs in the background
+            window.addEventListener('nihon_timer_tick', () => {
+                loadDashboardStats();
+                loadAiGoalStats();
+                loadDashboardTasks();
+            });
+
+            // Reload if a timer completes (triggers achievements check)
+            window.addEventListener('nihon_timer_done', () => {
+                loadDashboardStats();
+                loadAiGoalStats();
+                loadDashboardTasks();
+            });
+
+            // Handle hotkey N trigger event from app.js
+            window.addEventListener('nihon_add_task_trigger', () => {
+                window.location.href = 'planner.html?add=true';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+/**
+ * calendar.css - Monthly Calendar View Styling for Nihon Journey
+ * Grid rendering, color code heatmaps (🟢, 🟡, 🔴), and popup history overlays.
+ */
+
+.calendar-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 16px 20px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 24px;
+}
+
+.calendar-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.calendar-container {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+/* Grid layout for Calendar */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+}
+
+.calendar-day-label {
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.calendar-cell {
+    aspect-ratio: 1 / 1;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background-color: var(--bg-washi);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    min-height: 80px;
+}
+
+.calendar-cell:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+    background-color: var(--bg-card);
+}
+
+.calendar-cell-num {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-main);
+}
+
+.calendar-cell-status {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    align-self: flex-end;
+    margin: 4px;
+}
+
+/* Status colors (🟢, 🟡, 🔴) */
+.calendar-cell.completed {
+    background-color: hsl(140, 50%, 94%);
+    border-color: hsl(140, 50%, 80%);
+}
+.calendar-cell.completed .calendar-cell-status {
+    background-color: var(--success);
+    box-shadow: 0 0 6px var(--success);
+}
+.calendar-cell.completed .calendar-cell-num {
+    color: hsl(140, 50%, 25%);
+}
+
+.calendar-cell.partial {
+    background-color: hsl(42, 85%, 94%);
+    border-color: hsl(42, 85%, 80%);
+}
+.calendar-cell.partial .calendar-cell-status {
+    background-color: var(--warning);
+    box-shadow: 0 0 6px var(--warning);
+}
+.calendar-cell.partial .calendar-cell-num {
+    color: hsl(42, 70%, 25%);
+}
+
+.calendar-cell.missed {
+    background-color: hsl(355, 78%, 95%);
+    border-color: hsl(355, 78%, 85%);
+}
+.calendar-cell.missed .calendar-cell-status {
+    background-color: var(--danger);
+    box-shadow: 0 0 6px var(--danger);
+}
+.calendar-cell.missed .calendar-cell-num {
+    color: hsl(355, 70%, 30%);
+}
+
+/* Gray out days from adjacent months */
+.calendar-cell.other-month {
+    opacity: 0.3;
+    cursor: default;
+    background-color: transparent;
+}
+.calendar-cell.other-month:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: var(--border-color);
+}
+
+/* Highlight today */
+.calendar-cell.today {
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 0 2px rgba(var(--primary-hue), 78%, 56%, 0.15);
+}
+
+/* Day indicator details overlay in modal */
+.history-time-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--bg-washi);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.history-section-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 6px;
+}
+
+.history-task-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 0.9rem;
+}
+
+.history-task-item i.completed {
+    color: var(--success);
+}
+
+.history-task-item i.pending {
+    color: var(--text-muted);
+}
+
+/* Legend items */
+.calendar-legend {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+}
+.legend-color.completed { background-color: var(--success); }
+.legend-color.partial { background-color: var(--warning); }
+.legend-color.missed { background-color: var(--danger); }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .calendar-grid {
+        gap: 6px;
+    }
+    
+    .calendar-cell {
+        min-height: 60px;
+        padding: 4px;
+    }
+
+    .calendar-cell-num {
+        font-size: 0.85rem;
+    }
+
+    .calendar-cell-status {
+        width: 8px;
+        height: 8px;
+    }
+}

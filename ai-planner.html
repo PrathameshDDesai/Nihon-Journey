@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nihon Journey - AI Study Planner</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Style Sheets -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/planner.css">
+    <link rel="stylesheet" href="css/dark.css">
+    <style>
+        .ai-grid {
+            display: grid;
+            grid-template-columns: 3fr 2fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        .prompt-tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .prompt-tag {
+            background-color: var(--bg-washi);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .prompt-tag:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background-color: var(--bg-card);
+            transform: translateY(-1px);
+        }
+
+        /* Active Schedule Lists */
+        .ai-schedule-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 70vh;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .ai-day-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: var(--transition);
+        }
+
+        .ai-day-card.completed {
+            border-color: var(--success);
+            background-color: hsl(140, 50%, 98%);
+        }
+        
+        [data-theme="dark"] .ai-day-card.completed {
+            background-color: hsl(140, 30%, 12%);
+            border-color: var(--success);
+        }
+
+        .ai-day-card.completed .task-check-btn {
+            border-color: var(--success);
+            background-color: var(--success);
+            color: white;
+        }
+
+        .ai-day-badge {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            background-color: var(--bg-washi);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.75rem;
+            color: var(--text-main);
+            flex-shrink: 0;
+        }
+
+        .ai-day-card.completed .ai-day-badge {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .ai-day-badge span {
+            font-size: 0.95rem;
+        }
+
+        .ai-day-details {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .ai-day-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .ai-day-card.completed .ai-day-title {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .ai-day-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .ai-day-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        /* AI Coach Panel styling */
+        .coach-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .coach-bubble {
+            background-color: var(--bg-washi);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            position: relative;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-main);
+        }
+
+        /* Loading Spinner Overlay Specific for AI Generation */
+        .ai-loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(20, 20, 20, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 5000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            color: white;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .ai-loading-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .ai-spinner {
+            width: 70px;
+            height: 70px;
+            border: 6px solid rgba(255, 255, 255, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: ai-spin 1.2s infinite linear;
+        }
+
+        @keyframes ai-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 992px) {
+            .ai-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="torii-loader">⛩️</div>
+        <h2>Nihon Journey</h2>
+        <p>Gazing into the study scrolls...</p>
+    </div>
+
+    <!-- AI Generation Overlay -->
+    <div id="ai-loading-overlay" class="ai-loading-overlay">
+        <div class="ai-spinner"></div>
+        <h2 style="font-weight:800; text-align:center;">Gemini is planning your Japanese goals...</h2>
+        <p style="opacity:0.8; text-align:center; max-width:400px; font-size:0.9rem;">Analyzing available study days, balancing workloads, inserting revision periods, and scheduling mock tests.</p>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar Injection -->
+        <aside id="sidebar-container"></aside>
+
+        <!-- Main Wrapper -->
+        <div class="main-wrapper">
+            <!-- Header Injection -->
+            <header id="header-container"></header>
+
+            <main id="main-content">
+                
+                <!-- State 1: Goal Setup Panel -->
+                <div id="ai-planner-setup-view" style="display:none; flex-direction:column; gap:24px;">
+                    <div class="nihon-card traditional">
+                        <h3 class="card-title"><i class="fas fa-brain"></i>Create Your AI Study Plan</h3>
+                        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 20px; margin-top:-10px;">
+                            Enter your study objective, dates, and study resources. Gemini will automatically break down the workload, balance your daily slots, and schedule tests.
+                        </p>
+
+                        <!-- Preset Prompts -->
+                        <span class="form-label" style="display:block; margin-bottom:8px;">Prompt Suggestions:</span>
+                        <div class="prompt-tag-group">
+                            <span class="prompt-tag" onclick="selectPromptSuggestion(this)">I want to complete 10 chapters of Minna no Nihongo this month.</span>
+                            <span class="prompt-tag" onclick="selectPromptSuggestion(this)">Prepare for JLPT N5 in 45 days.</span>
+                            <span class="prompt-tag" onclick="selectPromptSuggestion(this)">Study Japanese for 1 hour every weekday.</span>
+                            <span class="prompt-tag" onclick="selectPromptSuggestion(this)">Finish Hiragana and Katakana in one week.</span>
+                            <span class="prompt-tag" onclick="selectPromptSuggestion(this)">Learn 300 N5 vocabulary words in 30 days.</span>
+                            <span class="prompt-tag" onclick="selectPromptSuggestion(this)">Complete 50 Kanji before my exam.</span>
+                        </div>
+
+                        <!-- Setup Form -->
+                        <form id="ai-setup-form" style="display:flex; flex-direction:column; gap:16px;">
+                            <div class="form-group">
+                                <label for="ai-goal-title" class="form-label">Study Goal Title *</label>
+                                <input type="text" id="ai-goal-title" class="form-control" placeholder="e.g. Master JLPT N5 Vocabulary" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ai-goal-desc" class="form-label">Description & Workload Details</label>
+                                <textarea id="ai-goal-desc" class="form-control" placeholder="Describe the total workload (e.g. 15 chapters of Genki, N4 Kanji, 50 grammar points)..." style="min-height:70px;"></textarea>
+                            </div>
+
+                            <div class="journal-row-two-col" style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                                <div class="form-group">
+                                    <label for="ai-goal-start" class="form-label">Start Date *</label>
+                                    <input type="date" id="ai-goal-start" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ai-goal-end" class="form-label">End Date (Deadline) *</label>
+                                    <input type="date" id="ai-goal-end" class="form-control" required>
+                                </div>
+                            </div>
+
+                            <div class="journal-row-two-col" style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                                <div class="form-group">
+                                    <label for="ai-goal-time" class="form-label">Daily Study Time Goal</label>
+                                    <select id="ai-goal-time" class="form-control">
+                                        <option value="30">30 minutes per day</option>
+                                        <option value="60" selected>1 hour per day</option>
+                                        <option value="120">2 hours per day</option>
+                                        <option value="180">3 hours per day</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ai-goal-priority" class="form-label">Priority</label>
+                                    <select id="ai-goal-priority" class="form-control">
+                                        <option value="high">High Priority</option>
+                                        <option value="medium" selected>Medium Priority</option>
+                                        <option value="low">Low Priority</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ai-goal-resource" class="form-label">Reference Material or Resource Link (Optional)</label>
+                                <input type="url" id="ai-goal-resource" class="form-control" placeholder="e.g. YouTube playlist link, book title, or course URL">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ai-goal-notes" class="form-label">Additional Instructions for Tutor AI</label>
+                                <textarea id="ai-goal-notes" class="form-control" placeholder="e.g. Skip weekends, focus more on listening, emphasize vocabulary quiz..." style="min-height:60px;"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="align-self: flex-start; padding: 12px 32px;"><i class="fas fa-magic"></i> Generate AI Study Plan</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- State 2: Active Goal Dashboard -->
+                <div id="ai-planner-active-view" class="ai-grid" style="display:none;">
+                    
+                    <!-- Left: Day-by-day schedule -->
+                    <div style="display:flex; flex-direction:column; gap:20px;">
+                        
+                        <!-- Goal Title Header Card -->
+                        <div class="nihon-card">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+                                <div>
+                                    <span class="tag tag-priority-high" id="active-goal-priority" style="margin-bottom:8px; display:inline-block;">Priority</span>
+                                    <h2 style="font-weight:800; font-size:1.5rem;" id="active-goal-title">Minna no Nihongo N5 Goal</h2>
+                                    <p style="color:var(--text-muted); font-size:0.85rem; margin-top:4px;" id="active-goal-desc">Plan description...</p>
+                                </div>
+                                <button class="btn btn-outline" style="color:var(--danger); border-color:var(--danger); padding:6px 12px; font-size:0.8rem;" onclick="deleteActiveGoal()"><i class="fas fa-trash-alt"></i> Delete Plan</button>
+                            </div>
+
+                            <!-- Progress fill -->
+                            <div style="margin-top:20px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; font-weight:700; margin-bottom:6px;">
+                                    <span id="active-goal-progress-text">0 of 0 tasks completed (0%)</span>
+                                    <span id="active-goal-days-remain" style="color:var(--primary);">30 days remaining</span>
+                                </div>
+                                <div class="nihon-progress-bar">
+                                    <div class="nihon-progress-fill" id="active-goal-progress-fill"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Schedule Header & Reschedule -->
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                            <h3 style="font-weight:800; font-size:1.2rem;">AI Daily Schedule</h3>
+                            <button class="btn btn-secondary" style="padding: 8px 16px; font-size:0.8rem;" onclick="triggerRedistributeSchedule()"><i class="fas fa-sync-alt"></i> Redistribute Missed Work</button>
+                        </div>
+
+                        <!-- Day Lists -->
+                        <div class="ai-schedule-list" id="ai-schedule-list-container">
+                            <!-- Injected dynamically by ai-planner.js -->
+                        </div>
+                    </div>
+
+                    <!-- Right: Coach Panel -->
+                    <div style="display:flex; flex-direction:column; gap:20px;">
+                        
+                        <!-- Coach avatar balloon -->
+                        <div class="nihon-card" style="display:flex; flex-direction:column; gap:16px;">
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div class="coach-avatar">🧙‍♂️</div>
+                                <div>
+                                    <h4 style="font-weight:800; font-size:0.95rem;">AI Study Coach</h4>
+                                    <span style="font-size:0.75rem; color:var(--text-muted);">Personal Japanese Tutor</span>
+                                </div>
+                            </div>
+                            <div class="coach-bubble" id="coach-speech-bubble">
+                                Loading recommendation...
+                            </div>
+                        </div>
+
+                        <!-- Statistics Panel -->
+                        <div class="nihon-card traditional">
+                            <h4 class="card-title" style="font-size:1rem; margin-bottom:16px;"><i class="fas fa-chart-line"></i>AI Plan Statistics</h4>
+                            <div class="settings-meta-info" style="gap:10px;">
+                                <div class="meta-row">
+                                    <span>Total study time</span>
+                                    <span class="meta-val" id="stats-plan-time">0 hours</span>
+                                </div>
+                                <div class="meta-row">
+                                    <span>Avg daily workload</span>
+                                    <span class="meta-val" id="stats-plan-load">1h / day</span>
+                                </div>
+                                <div class="meta-row">
+                                    <span>Target completion</span>
+                                    <span class="meta-val" id="stats-plan-deadline">Jul 31, 2026</span>
+                                </div>
+                                <div class="meta-row" style="border-bottom:none;">
+                                    <span>Resource Linked</span>
+                                    <span class="meta-val" id="stats-plan-resource" style="max-width:140px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; display:block;">None</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Milestone Checkpoints -->
+                        <div class="nihon-card">
+                            <h4 class="card-title" style="font-size:1rem; margin-bottom:12px;"><i class="fas fa-flag"></i>Coach Milestones</h4>
+                            <div class="list-items-grid" id="coach-milestones-list" style="display:flex; flex-direction:column; gap:8px;">
+                                <!-- Revision and Test milestones rendered dynamically -->
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Core Services Scripts -->
+    <script src="js/storage.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/timer.js"></script>
+    <script src="js/app.js"></script>
+
+    <!-- Page Specific Script -->
+    <script src="js/ai-planner.js"></script>
+</body>
+</html>

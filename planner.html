@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nihon Journey - Daily Planner</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Style Sheets -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/planner.css">
+    <link rel="stylesheet" href="css/dark.css">
+    <style>
+        /* Date Navigator Styling */
+        .date-navigator {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 12px 20px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 20px;
+            gap: 12px;
+        }
+
+        .date-navigator-center {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .date-input-field {
+            border: none;
+            background: none;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            font-family: inherit;
+            cursor: pointer;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="torii-loader">⛩️</div>
+        <h2>Nihon Journey</h2>
+        <p>Opening your daily scroll...</p>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar Injection -->
+        <aside id="sidebar-container"></aside>
+
+        <!-- Main Wrapper -->
+        <div class="main-wrapper">
+            <!-- Header Injection -->
+            <header id="header-container"></header>
+
+            <main id="main-content">
+                <!-- Date Switcher Navigator -->
+                <div class="date-navigator">
+                    <button class="btn btn-outline btn-icon" id="planner-date-prev" title="Previous Day">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="date-navigator-center">
+                        <i class="far fa-calendar-alt" style="color: var(--primary); font-size: 1.1rem;"></i>
+                        <input type="date" id="planner-date-input" class="date-input-field">
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;" id="planner-date-today">Today</button>
+                        <button class="btn class-outline btn-icon" id="planner-date-next" title="Next Day">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Daily Progress Summary Card -->
+                <div class="nihon-card" style="margin-bottom: 24px; padding: 16px 20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; font-weight:700; margin-bottom:8px;">
+                        <span id="planner-progress-text">0 of 0 tasks completed (0%)</span>
+                        <button class="btn btn-primary" id="planner-add-task-btn" style="padding: 8px 16px; font-size:0.85rem;"><i class="fas fa-plus"></i> Add Task</button>
+                    </div>
+                    <div class="nihon-progress-bar">
+                        <div class="nihon-progress-fill" id="planner-progress-fill"></div>
+                    </div>
+                </div>
+
+                <!-- Filter Controls Panel -->
+                <div class="planner-controls">
+                    <!-- Search Box -->
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="search" id="search-input" placeholder="Search tasks, notes ( / )..." class="form-control">
+                    </div>
+
+                    <!-- Category / Priority Dropdowns -->
+                    <div class="filter-group">
+                        <select id="filter-category" class="filter-select">
+                            <option value="all">All Categories</option>
+                            <option value="Hiragana">Hiragana</option>
+                            <option value="Katakana">Katakana</option>
+                            <option value="Kanji">Kanji</option>
+                            <option value="Vocabulary">Vocabulary</option>
+                            <option value="Grammar">Grammar</option>
+                            <option value="Reading">Reading</option>
+                            <option value="Listening">Listening</option>
+                            <option value="Speaking">Speaking</option>
+                            <option value="Writing">Writing</option>
+                            <option value="Revision">Revision</option>
+                            <option value="JLPT Practice">JLPT Practice</option>
+                            <option value="Anime">Anime</option>
+                            <option value="Reading Manga">Reading Manga</option>
+                        </select>
+
+                        <select id="filter-priority" class="filter-select">
+                            <option value="all">All Priorities</option>
+                            <option value="high">High Priority</option>
+                            <option value="medium">Medium Priority</option>
+                            <option value="low">Low Priority</option>
+                        </select>
+
+                        <select id="sort-by" class="filter-select">
+                            <option value="default">Default Order</option>
+                            <option value="priority-desc">Priority: High to Low</option>
+                            <option value="priority-asc">Priority: Low to High</option>
+                            <option value="time-desc">Est Time: Longest</option>
+                            <option value="time-asc">Est Time: Shortest</option>
+                            <option value="category">Sort by Category</option>
+                        </select>
+
+                        <!-- Status Tabs -->
+                        <div class="status-tabs">
+                            <button class="status-tab active" data-status="all">All</button>
+                            <button class="status-tab" data-status="pending">Pending</button>
+                            <button class="status-tab" data-status="completed">Completed</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Drag and Drop Task Container -->
+                <div class="task-list" id="task-list-container">
+                    <!-- Cards will be dynamically injected here -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Floating Action Button (FAB) -->
+    <button class="fab" onclick="openAddTaskModal()" title="Add Task (N)">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Add/Edit Task Modal Dialog -->
+    <div id="task-modal" class="nihon-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="task-modal-title">Add New Study Task</span>
+                <button class="modal-close" id="task-modal-close">&times;</button>
+            </div>
+            <form id="task-form">
+                <div class="modal-body">
+                    <!-- Task name -->
+                    <div class="form-group">
+                        <label for="task-name-input" class="form-label">Task Name *</label>
+                        <input type="text" id="task-name-input" class="form-control" placeholder="e.g. Learn N5 Day Kanji" required>
+                    </div>
+
+                    <!-- Category selection -->
+                    <div class="form-group">
+                        <label for="task-category-input" class="form-label">Category</label>
+                        <select id="task-category-input" class="form-control">
+                            <option value="Hiragana">Hiragana</option>
+                            <option value="Katakana">Katakana</option>
+                            <option value="Kanji">Kanji</option>
+                            <option value="Vocabulary">Vocabulary</option>
+                            <option value="Grammar">Grammar</option>
+                            <option value="Reading">Reading</option>
+                            <option value="Listening">Listening</option>
+                            <option value="Speaking">Speaking</option>
+                            <option value="Writing">Writing</option>
+                            <option value="Revision">Revision</option>
+                            <option value="JLPT Practice">JLPT Practice</option>
+                            <option value="Anime">Anime</option>
+                            <option value="Reading Manga">Reading Manga</option>
+                        </select>
+                    </div>
+
+                    <!-- Priority selection -->
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <input type="hidden" id="task-priority-value" value="medium">
+                        <div class="priority-btn-group">
+                            <div class="priority-select-btn high" data-priority="high">High</div>
+                            <div class="priority-select-btn medium active" data-priority="medium">Medium</div>
+                            <div class="priority-select-btn low" data-priority="low">Low</div>
+                        </div>
+                    </div>
+
+                    <!-- Estimated Time (Minutes) -->
+                    <div class="form-group">
+                        <label for="task-est-input" class="form-label">Estimated Time (Minutes)</label>
+                        <input type="number" id="task-est-input" min="5" max="240" step="5" value="25" class="form-control">
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="form-group">
+                        <label for="task-notes-input" class="form-label">Notes & Details</label>
+                        <textarea id="task-notes-input" class="form-control" placeholder="e.g. Focus on reading and radical meanings..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" id="task-cancel-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Core & Page Services Scripts -->
+    <script src="js/storage.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/timer.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/planner.js"></script>
+</body>
+</html>
