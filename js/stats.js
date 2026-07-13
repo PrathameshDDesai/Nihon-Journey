@@ -229,7 +229,7 @@
     }
 
     // Initialize Page
-    document.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('nihon_data_loaded', () => {
         init();
     });
 })();

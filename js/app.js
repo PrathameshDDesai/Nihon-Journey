@@ -98,13 +98,13 @@
                         </div>
                     </div>
                     <!-- User Profile Quick Card -->
-                    <div class="user-widget" onclick="window.location.href='settings.html'">
+                    <div class="user-widget" onclick="window.location.href='profile.html'">
                         <div class="user-avatar" id="sidebar-user-avatar">
                             ${settings.username ? settings.username.charAt(0).toUpperCase() : 'T'}
                         </div>
                         <div class="user-info">
                             <span class="user-name" id="sidebar-user-name">${settings.username || 'Tabi-bito'}</span>
-                            <span class="user-status">Level ${this.calculateLevel()} Learner</span>
+                            <span class="user-status">Level ${this.calculateLevel()} Learner <i class="fas fa-cloud-upload-alt" id="sidebar-cloud-sync" style="display: none; color: var(--primary); margin-left: 4px;" title="Cloud Sync Active"></i></span>
                         </div>
                     </div>
                 </div>

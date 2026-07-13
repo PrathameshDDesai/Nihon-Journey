@@ -463,8 +463,8 @@
         editingTaskId = null;
     }
 
-    // Initialize script on document load
-    document.addEventListener('DOMContentLoaded', () => {
+    // Initialize script on user data load
+    window.addEventListener('nihon_data_loaded', () => {
         init();
     });
 })();

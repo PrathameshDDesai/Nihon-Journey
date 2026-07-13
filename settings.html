@@ -74,6 +74,75 @@
                     <!-- Left Side: Forms -->
                     <div style="display:flex; flex-direction:column; gap:24px;">
                         
+                        <!-- Cloud Sync & Backup Card -->
+                        <div class="nihon-card" id="firebase-auth-card">
+                            <h3 class="settings-group-title"><i class="fas fa-cloud"></i>Cloud Sync & Backup</h3>
+                            <div id="auth-loading-state" class="auth-section">
+                                <p style="font-size:0.85rem; color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Checking connection to cloud scroll...</p>
+                            </div>
+                            <div id="auth-logged-out-state" class="auth-section" style="display: none;">
+                                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 16px;">
+                                    Sign in to automatically sync your study streaks, daily tasks, journals, and checklists to the cloud, allowing you to access them on any device.
+                                </p>
+                                
+                                <div class="tab-container" style="display:flex; border-bottom:1px solid var(--border-color); margin-bottom:16px;">
+                                    <button class="auth-tab-btn active" id="btn-tab-signin" style="flex:1; padding:8px; background:none; border:none; border-bottom:2px solid var(--primary); color:var(--primary); font-weight:700; cursor:pointer;">Sign In</button>
+                                    <button class="auth-tab-btn" id="btn-tab-signup" style="flex:1; padding:8px; background:none; border:none; border-bottom:2px solid transparent; color:var(--text-muted); font-weight:700; cursor:pointer;">Register</button>
+                                </div>
+
+                                <!-- Sign In Form -->
+                                <form id="signin-form">
+                                    <div class="form-group">
+                                        <label for="signin-email" class="form-label">Email Address</label>
+                                        <input type="email" id="signin-email" class="form-control" placeholder="your.name@example.com" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="signin-password" class="form-label">Password</label>
+                                        <input type="password" id="signin-password" class="form-control" placeholder="••••••••" required>
+                                    </div>
+                                    <div style="display:flex; flex-direction:column; gap:10px; margin-top:16px;">
+                                        <button type="submit" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+                                        <button type="button" class="btn btn-outline" id="btn-google-signin"><i class="fab fa-google" style="color:#db4437; margin-right:6px;"></i> Sign in with Google</button>
+                                    </div>
+                                </form>
+
+                                <!-- Sign Up Form -->
+                                <form id="signup-form" style="display: none;">
+                                    <div class="form-group">
+                                        <label for="signup-email" class="form-label">Email Address</label>
+                                        <input type="email" id="signup-email" class="form-control" placeholder="your.name@example.com" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="signup-password" class="form-label">Password (min 6 characters)</label>
+                                        <input type="password" id="signup-password" class="form-control" placeholder="••••••••" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="signup-confirm-password" class="form-label">Confirm Password</label>
+                                        <input type="password" id="signup-confirm-password" class="form-control" placeholder="••••••••" required>
+                                    </div>
+                                    <div style="display:flex; flex-direction:column; gap:10px; margin-top:16px;">
+                                        <button type="submit" class="btn btn-primary"><i class="fas fa-user-plus"></i> Create Account</button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <div id="auth-logged-in-state" class="auth-section" style="display: none;">
+                                <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;">
+                                    <div class="user-avatar" id="auth-user-avatar" style="width:50px; height:50px; font-size:1.5rem; display:flex; align-items:center; justify-content:center; background:var(--primary); color:white; border-radius:50%;">
+                                        U
+                                    </div>
+                                    <div>
+                                        <h4 id="auth-user-email" style="font-weight:800; color:var(--text-main); margin-bottom:4px;">user@example.com</h4>
+                                        <p id="auth-sync-status" style="font-size:0.75rem; color:var(--text-muted);"><i class="fas fa-check-circle" style="color:var(--success);"></i> Cloud Sync active</p>
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:12px;">
+                                    <button class="btn btn-secondary" id="btn-sync-now"><i class="fas fa-sync"></i> Sync Now</button>
+                                    <button class="btn btn-outline" id="btn-signout" style="color:var(--danger); border-color:var(--danger); background-color:transparent;"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- User Profile Settings Card -->
                         <div class="nihon-card">
                             <h3 class="settings-group-title"><i class="fas fa-user-circle"></i>Profile Settings</h3>
@@ -172,7 +241,13 @@
     </div>
 
     <!-- Core Services Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/database.js"></script>
     <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/theme.js"></script>
     <script src="js/timer.js"></script>
     <script src="js/app.js"></script>
@@ -338,9 +413,136 @@
             }
         });
 
+        function setupFirebaseUI() {
+            // Tab switching
+            const btnTabSignin = document.getElementById('btn-tab-signin');
+            const btnTabSignup = document.getElementById('btn-tab-signup');
+            const signinForm = document.getElementById('signin-form');
+            const signupForm = document.getElementById('signup-form');
+
+            if (btnTabSignin && btnTabSignup && signinForm && signupForm) {
+                btnTabSignin.addEventListener('click', () => {
+                    btnTabSignin.classList.add('active');
+                    btnTabSignin.style.borderBottom = '2px solid var(--primary)';
+                    btnTabSignin.style.color = 'var(--primary)';
+                    btnTabSignup.classList.remove('active');
+                    btnTabSignup.style.borderBottom = '2px solid transparent';
+                    btnTabSignup.style.color = 'var(--text-muted)';
+                    signinForm.style.display = 'block';
+                    signupForm.style.display = 'none';
+                });
+
+                btnTabSignup.addEventListener('click', () => {
+                    btnTabSignup.classList.add('active');
+                    btnTabSignup.style.borderBottom = '2px solid var(--primary)';
+                    btnTabSignup.style.color = 'var(--primary)';
+                    btnTabSignin.classList.remove('active');
+                    btnTabSignin.style.borderBottom = '2px solid transparent';
+                    btnTabSignin.style.color = 'var(--text-muted)';
+                    signupForm.style.display = 'block';
+                    signinForm.style.display = 'none';
+                });
+            }
+
+            // Sign In Submit
+            const signinFormEl = document.getElementById('signin-form');
+            if (signinFormEl) {
+                signinFormEl.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('signin-email').value.trim();
+                    const password = document.getElementById('signin-password').value;
+                    const submitBtn = signinFormEl.querySelector('button[type="submit"]');
+                    const origText = submitBtn.innerHTML;
+                    
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+                    
+                    const res = await window.NihonAuth.signIn(email, password);
+                    if (!res.success) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = origText;
+                    }
+                });
+            }
+
+            // Sign Up Submit
+            const signupFormEl = document.getElementById('signup-form');
+            if (signupFormEl) {
+                signupFormEl.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('signup-email').value.trim();
+                    const password = document.getElementById('signup-password').value;
+                    const confirmPassword = document.getElementById('signup-confirm-password').value;
+                    
+                    if (password.length < 6) {
+                        alert('Password must be at least 6 characters.');
+                        return;
+                    }
+                    if (password !== confirmPassword) {
+                        alert('Passwords do not match.');
+                        return;
+                    }
+
+                    const submitBtn = signupFormEl.querySelector('button[type="submit"]');
+                    const origText = submitBtn.innerHTML;
+                    
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+                    
+                    const res = await window.NihonAuth.signUp(email, password);
+                    if (!res.success) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = origText;
+                    }
+                });
+            }
+
+            // Google Sign In
+            const btnGoogleSignin = document.getElementById('btn-google-signin');
+            if (btnGoogleSignin) {
+                btnGoogleSignin.addEventListener('click', async () => {
+                    const origText = btnGoogleSignin.innerHTML;
+                    btnGoogleSignin.disabled = true;
+                    btnGoogleSignin.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Google Login...';
+                    const res = await window.NihonAuth.signInWithGoogle();
+                    if (!res.success) {
+                        btnGoogleSignin.disabled = false;
+                        btnGoogleSignin.innerHTML = origText;
+                    }
+                });
+            }
+
+            // Sign Out
+            const btnSignout = document.getElementById('btn-signout');
+            if (btnSignout) {
+                btnSignout.addEventListener('click', async () => {
+                    await window.NihonAuth.signOut();
+                });
+            }
+
+            // Sync Now
+            const btnSyncNow = document.getElementById('btn-sync-now');
+            if (btnSyncNow) {
+                btnSyncNow.addEventListener('click', async () => {
+                    btnSyncNow.disabled = true;
+                    const origText = btnSyncNow.innerHTML;
+                    btnSyncNow.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing...';
+                    await window.NihonAuth.syncLocalToCloud(false);
+                    btnSyncNow.disabled = false;
+                    btnSyncNow.innerHTML = origText;
+                });
+            }
+            
+            // Initial UI Update in case Firebase loaded before this
+            if (window.NihonAuth) {
+                window.NihonAuth.updateUIState();
+            }
+        }
+
         // Page Init
-        document.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('nihon_data_loaded', () => {
             loadSettingsForm();
+            setupFirebaseUI();
 
             // Setup shortcut N trigger redirects
             window.addEventListener('nihon_add_task_trigger', () => {

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nihon Journey - User Profile</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Style Sheets -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark.css">
+    <style>
+        .profile-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .profile-avatar-card {
+            text-align: center;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .profile-avatar-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            font-size: 3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+            border: 3px solid var(--border-color);
+        }
+
+        .profile-avatar-large img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-name-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .profile-email-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: -8px;
+        }
+
+        .profile-section-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .meta-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+        }
+
+        .meta-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .meta-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .meta-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .meta-value {
+            font-weight: 700;
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="torii-loader">⛩️</div>
+        <h2>Nihon Journey</h2>
+        <p>Retrieving your training scroll...</p>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar Injection -->
+        <aside id="sidebar-container"></aside>
+
+        <!-- Main Wrapper -->
+        <div class="main-wrapper">
+            <!-- Header Injection -->
+            <header id="header-container"></header>
+
+            <main id="main-content">
+                <div class="profile-container">
+                    
+                    <!-- Left: Avatar & Meta -->
+                    <div class="nihon-card profile-avatar-card">
+                        <div class="profile-avatar-large" id="profile-large-avatar">U</div>
+                        <h3 class="profile-name-title" id="profile-display-name">Learner</h3>
+                        <p class="profile-email-subtitle" id="profile-display-email">learner@example.com</p>
+                        
+                        <div class="meta-list" style="margin-top: 16px;">
+                            <div class="meta-item">
+                                <span class="meta-label">Study Level</span>
+                                <span class="meta-value" id="profile-level-badge">Level 1 Learner</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Joined</span>
+                                <span class="meta-value" id="profile-joined-date">-</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Last Login</span>
+                                <span class="meta-value" id="profile-login-date">-</span>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-outline" id="btn-profile-signout" style="width:100%; margin-top:20px; color:var(--danger); border-color:var(--danger); background:transparent; justify-content:center;">
+                            <i class="fas fa-sign-out-alt"></i> Sign Out
+                        </button>
+                    </div>
+
+                    <!-- Right: Edit Form -->
+                    <div class="nihon-card">
+                        <h3 class="profile-section-title"><i class="fas fa-user-edit"></i> Edit Profile</h3>
+                        <form id="profile-edit-form">
+                            <div class="form-group">
+                                <label for="profile-name-input" class="form-label">Display Name</label>
+                                <input type="text" id="profile-name-input" class="form-control" placeholder="e.g. Learner-san" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="profile-email-input" class="form-label">Email Address (Read-only)</label>
+                                <input type="email" id="profile-email-input" class="form-control" readonly disabled>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="profile-avatar-input" class="form-label">Avatar Photo URL</label>
+                                <input type="url" id="profile-avatar-input" class="form-control" placeholder="https://example.com/avatar.jpg">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Firebase Core and Services compat libraries -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/timer.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        // Wait for user authenticated data load event
+        window.addEventListener('nihon_data_loaded', async (e) => {
+            const user = e.detail;
+            
+            // Fetch profile data from Database
+            const profileRef = window.db.ref(`users/${user.uid}/profile`);
+            const snapshot = await profileRef.once('value');
+            const profile = snapshot.val() || {};
+
+            // Populate form and labels
+            document.getElementById('profile-display-name').textContent = profile.name || user.displayName || user.email.split('@')[0];
+            document.getElementById('profile-display-email').textContent = user.email;
+            
+            document.getElementById('profile-name-input').value = profile.name || user.displayName || '';
+            document.getElementById('profile-email-input').value = user.email;
+            document.getElementById('profile-avatar-input').value = profile.photoURL || '';
+
+            // Handle Avatar Display
+            const avatarContainer = document.getElementById('profile-large-avatar');
+            const initial = (profile.name || user.email).charAt(0).toUpperCase();
+            if (profile.photoURL) {
+                avatarContainer.innerHTML = `<img src="${profile.photoURL}" alt="User Avatar">`;
+            } else {
+                avatarContainer.innerHTML = initial;
+            }
+
+            // Populate joined and login dates
+            if (profile.createdAt) {
+                const joined = new Date(profile.createdAt);
+                document.getElementById('profile-joined-date').textContent = joined.toLocaleDateString([], {year: 'numeric', month: 'long', day: 'numeric'});
+            }
+            if (profile.lastLogin) {
+                const lastLogin = new Date(profile.lastLogin);
+                document.getElementById('profile-login-date').textContent = lastLogin.toLocaleString();
+            }
+
+            // Populate Level Badge using the app's calculation logic
+            if (window.NihonApp && window.NihonApp.calculateLevel) {
+                const lvl = window.NihonApp.calculateLevel();
+                document.getElementById('profile-level-badge').textContent = `Level ${lvl} Learner`;
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const profileForm = document.getElementById('profile-edit-form');
+            const signoutBtn = document.getElementById('btn-profile-signout');
+
+            // Form Submit
+            profileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('profile-name-input').value;
+                const photoURL = document.getElementById('profile-avatar-input').value;
+                
+                const loader = document.getElementById('loading-screen');
+                if (loader) loader.classList.remove('hidden');
+
+                try {
+                    const user = window.auth.currentUser;
+                    if (user) {
+                        // Update Auth profile
+                        await user.updateProfile({ displayName: name, photoURL: photoURL });
+                        
+                        // Update Database profile
+                        await window.db.ref(`users/${user.uid}/profile`).update({
+                            name: name,
+                            photoURL: photoURL
+                        });
+
+                        // Update Settings Username to sync
+                        const settings = window.NihonStorage.getSettings();
+                        settings.username = name;
+                        window.NihonStorage.saveSettings(settings);
+
+                        window.NihonAuth.showToast('Profile Updated! ✨', 'Changes saved successfully.', 'success');
+                        setTimeout(() => window.location.reload(), 1000);
+                    }
+                } catch (err) {
+                    console.error("Profile edit error:", err);
+                    window.NihonAuth.showToast('Update Failed', err.message, 'danger');
+                    if (loader) loader.classList.add('hidden');
+                }
+            });
+
+            // Sign out Button
+            signoutBtn.addEventListener('click', () => {
+                window.NihonAuth.signOut();
+            });
+        });
+    </script>
+</body>
+</html>

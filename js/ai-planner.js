@@ -611,7 +611,7 @@
     }
 
     // Page Init
-    document.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('nihon_data_loaded', () => {
         init();
     });
 })();

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nihon Journey - Sign In</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Style Sheets -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark.css">
+    <style>
+        .auth-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            min-height: 100vh;
+            padding: 20px;
+            background-image: var(--seigaiha-pattern);
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .auth-logo {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .auth-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .auth-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .auth-footer-text {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 20px;
+        }
+
+        .auth-footer-text a {
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .auth-footer-text a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="torii-loader">⛩️</div>
+        <h2>Nihon Journey</h2>
+        <p>Aligning stars in the cloud database...</p>
+    </div>
+
+    <div class="auth-container">
+        <div class="nihon-card auth-card">
+            <div class="auth-header">
+                <span class="auth-logo">⛩️</span>
+                <h2 class="auth-title">Nihon Journey</h2>
+                <p class="auth-subtitle">Begin your study voyage (日本旅行)</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email" class="form-label">Email Address</label>
+                    <input type="email" id="login-email" class="form-control" placeholder="your.name@example.com" required>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label for="login-password" class="form-label" style="display:flex; justify-content:space-between;">
+                        <span>Password</span>
+                        <a href="#" id="link-forgot-password" style="font-size:0.75rem; color:var(--primary); text-decoration:none; font-weight:700;">Forgot?</a>
+                    </label>
+                    <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:20px; justify-content:center;">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+                
+                <div style="text-align:center; margin:16px 0; font-size:0.8rem; color:var(--text-muted); position:relative;">
+                    <span style="background:var(--bg-card); padding:0 10px; position:relative; z-index:1;">OR</span>
+                    <hr style="position:absolute; top:50%; width:100%; border:0; border-top:1px solid var(--border-color); z-index:0; margin:0;">
+                </div>
+
+                <button type="button" class="btn btn-outline" id="btn-google-login" style="width:100%; justify-content:center;">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" style="width:18px; margin-right:8px;" alt="Google Logo"> Sign in with Google
+                </button>
+            </form>
+
+            <div class="auth-footer-text">
+                Don't have an account? <a href="register.html">Register here</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Reset Modal -->
+    <div id="forgot-modal" class="nihon-modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <span class="modal-title">Reset Password</span>
+                <button class="modal-close" id="forgot-modal-close">&times;</button>
+            </div>
+            <div class="modal-body" style="padding:20px;">
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">
+                    Enter your email address and we'll send you a recovery link.
+                </p>
+                <form id="forgot-form">
+                    <div class="form-group">
+                        <label for="forgot-email" class="form-label">Email Address</label>
+                        <input type="email" id="forgot-email" class="form-control" placeholder="your.name@example.com" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%; margin-top:15px; justify-content:center;">
+                        Send Reset Link
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Core and Services compat libraries -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('login-form');
+            const googleBtn = document.getElementById('btn-google-login');
+            const forgotLink = document.getElementById('link-forgot-password');
+            const forgotModal = document.getElementById('forgot-modal');
+            const forgotClose = document.getElementById('forgot-modal-close');
+            const forgotForm = document.getElementById('forgot-form');
+
+            // Form Submit
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                
+                const loader = document.getElementById('loading-screen');
+                if (loader) loader.classList.remove('hidden');
+
+                const res = await window.NihonAuth.signIn(email, password);
+                if (!res.success && loader) {
+                    loader.classList.add('hidden');
+                }
+            });
+
+            // Google Login
+            googleBtn.addEventListener('click', async () => {
+                const loader = document.getElementById('loading-screen');
+                if (loader) loader.classList.remove('hidden');
+                
+                const res = await window.NihonAuth.signInWithGoogle();
+                if (!res.success && loader) {
+                    loader.classList.add('hidden');
+                }
+            });
+
+            // Forgot Password Modal
+            forgotLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                forgotModal.classList.add('open');
+            });
+
+            forgotClose.addEventListener('click', () => {
+                forgotModal.classList.remove('open');
+            });
+
+            forgotForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('forgot-email').value;
+                const res = await window.NihonAuth.sendPasswordReset(email);
+                if (res.success) {
+                    forgotModal.classList.remove('open');
+                    forgotForm.reset();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

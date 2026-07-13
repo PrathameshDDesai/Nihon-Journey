@@ -270,7 +270,7 @@
         if (modal) modal.classList.remove('open');
     };
 
-    document.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('nihon_data_loaded', () => {
         init();
         
         // Setup close click outside
